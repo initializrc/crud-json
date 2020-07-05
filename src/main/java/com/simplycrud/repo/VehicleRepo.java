@@ -13,7 +13,7 @@ public interface VehicleRepo extends JpaRepository<Vehicle, Long> {
 
     public Vehicle findVehicleByPlateNumber(String plateNumber);
 
-    public boolean existsVehicleByPlateNumeber(String plateNumber);
+    public boolean existsVehicleByPlateNumber(String plateNumber);
 
     public List<Vehicle> findByYearGreaterThan(int year);
 

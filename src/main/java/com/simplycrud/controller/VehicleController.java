@@ -1,11 +1,9 @@
 package com.simplycrud.controller;
 
 import com.simplycrud.model.Vehicle;
-import com.simplycrud.payload.GetVehicleCustomRes;
-import com.simplycrud.payload.GetVehicleRes;
-import com.simplycrud.payload.InputVehicleReq;
-import com.simplycrud.payload.PostVehicleRes;
+import com.simplycrud.payload.*;
 import com.simplycrud.repo.VehicleRepo;
+import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,7 @@ public class VehicleController {
 
     @PostMapping(value = "/inutVehicle")
     public ResponseEntity<PostVehicleRes> inputVehicle(@Valid @RequestParam InputVehicleReq inputVehicleReq){
-        Boolean isExists = vehicleRepo.existsVehicleByPlateNumeber(inputVehicleReq.getPlateNumber());
+        Boolean isExists = vehicleRepo.existsVehicleByPlateNumber(inputVehicleReq.getPlateNumber());
         if (isExists){
             PostVehicleRes postVehicleRes = new PostVehicleRes("300","Vehicle Is Exists",vehicleRepo.findVehicleByPlateNumber(inputVehicleReq.getPlateNumber()));
             return new ResponseEntity<>(postVehicleRes, HttpStatus.OK);
@@ -77,5 +75,48 @@ public class VehicleController {
                 vehicleRepo.findByYearLessThan(year)
         );
         return new ResponseEntity<>(getVehicleCustomRes, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/updateVehicleYearByPlateNumber")
+    public ResponseEntity<PostVehicleRes> updateVehicleYearByPlateNumber(@RequestParam String plateNumber, int year){
+        Vehicle vehicle = new Vehicle();
+        vehicle = vehicleRepo.findVehicleByPlateNumber(plateNumber);
+        if (vehicle == null){
+            PostVehicleRes postVehicleRes = new PostVehicleRes("404","Not Found",null);
+            return new ResponseEntity<>(postVehicleRes, HttpStatus.OK);
+        }
+        vehicle.setYear(year);
+        vehicleRepo.save(vehicle);
+
+        PostVehicleRes postVehicleRes = new PostVehicleRes("200","Sukes",vehicle);
+        return new ResponseEntity<>(postVehicleRes, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/deleteVehicleByplateNumber")
+    public ResponseEntity<DeleteVehicleRes> deleteVehicleByPlateNumber(@RequestParam String plateNumber){
+        Vehicle vehicle = new Vehicle();
+        vehicle = vehicleRepo.findVehicleByPlateNumber(plateNumber);
+
+        if (vehicle==null){
+            DeleteVehicleRes deleteVehicleRes = new DeleteVehicleRes("404","Not Found",null);
+            return new ResponseEntity<>(deleteVehicleRes, HttpStatus.OK);
+        }
+        vehicleRepo.delete(vehicle);
+        DeleteVehicleRes deleteVehicleRes = new DeleteVehicleRes("200","vehicle berhasil dihapus",vehicle);
+        return new ResponseEntity<>(deleteVehicleRes, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/deleteVehicleById")
+    public ResponseEntity<DeleteVehicleRes> deleteVehicleById(@RequestParam long id){
+        Vehicle vehicle = new Vehicle();
+        vehicle= vehicleRepo.findVehicleById(id);
+        if (vehicle == null){
+            DeleteVehicleRes deleteVehicleRes = new DeleteVehicleRes("404","Not Found",null);
+            return new ResponseEntity<>(deleteVehicleRes, HttpStatus.OK);
+        }
+
+        vehicleRepo.delete(vehicle);
+        DeleteVehicleRes deleteVehicleRes = new DeleteVehicleRes("200","vehicle berhasil dihapus",vehicle);
+        return new ResponseEntity<>(deleteVehicleRes, HttpStatus.OK);
     }
 }
