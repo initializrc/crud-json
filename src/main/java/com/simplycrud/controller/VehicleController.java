@@ -3,14 +3,10 @@ package com.simplycrud.controller;
 import com.simplycrud.model.Vehicle;
 import com.simplycrud.payload.*;
 import com.simplycrud.repo.VehicleRepo;
-import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
@@ -23,8 +19,8 @@ public class VehicleController {
     @Autowired
     VehicleRepo vehicleRepo;
 
-    @PostMapping(value = "/inutVehicle")
-    public ResponseEntity<PostVehicleRes> inputVehicle(@Valid @RequestParam InputVehicleReq inputVehicleReq){
+    @PostMapping(value = "/inputVehicle")
+    public ResponseEntity<PostVehicleRes> inputVehicle(@Valid @RequestBody InputVehicleReq inputVehicleReq){
         Boolean isExists = vehicleRepo.existsVehicleByPlateNumber(inputVehicleReq.getPlateNumber());
         if (isExists){
             PostVehicleRes postVehicleRes = new PostVehicleRes("300","Vehicle Is Exists",vehicleRepo.findVehicleByPlateNumber(inputVehicleReq.getPlateNumber()));
